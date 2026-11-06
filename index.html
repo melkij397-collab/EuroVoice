@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EuroVoice</title>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101525;color:white;font-family:Arial,sans-serif}
+header{padding:22px;background:#172d70;font-size:28px;font-weight:bold}
+main{max-width:850px;margin:auto;padding:20px}
+h2{color:#63a8ff}
+input,button{padding:13px;border:0;border-radius:8px;margin:5px 0}
+input{width:100%;background:#263149;color:white}
+button{background:#1769e0;color:white;font-weight:bold;cursor:pointer}
+video{width:100%;background:black;border-radius:12px;margin-top:12px}
+.channel{background:#202b40;padding:12px;margin:8px 0;border-radius:8px}
+small{color:#aab8d0}
+</style>
+</head>
+<body>
+<header>📺 EuroVoice</header>
+<main>
+<h2>Европейское телевидение</h2>
+<p>Смотри доступные телеканалы в одном месте.</p>
+
+<video id="player" controls playsinline></video>
+
+<h2>Добавить телеканал</h2>
+<input id="name" placeholder="Название канала">
+<input id="url" placeholder="Ссылка на поток .m3u8">
+<button onclick="addChannel()">Добавить канал</button>
+
+<h2>Мои телеканалы</h2>
+<div id="channels"></div>
+
+<p><small>Используй только потоки, доступные для законного просмотра и распространения.</small></p>
+<p><small>Русское автоматическое озвучивание будет добавлено отдельно.</small></p>
+</main>
+<script>
+let channels=JSON.parse(localStorage.getItem("channels")||"[]");
+let hls=null;
+
+function play(url){
+ const video=document.getElementById("player");
+ if(hls){hls.destroy();hls=null;}
+ if(Hls.isSupported()){
+  hls=new Hls();
+  hls.loadSource(url);
+  hls.attachMedia(video);
+ }else if(video.canPlayType("application/vnd.apple.mpegurl")){
+  video.src=url;
+ }else{
+  alert("Браузер не поддерживает этот формат.");
+ }
+}
+function save(){
+ localStorage.setItem("channels",JSON.stringify(channels));
+ render();
+}
+function addChannel(){
+ const name=document.getElementById("name").value.trim();
+ const url=document.getElementById("url").value.trim();
+ if(!name||!url){alert("Заполни оба поля");return;}
+ channels.push({name,url});
+ document.getElementById("name").value="";
+ document.getElementById("url").value="";
+ save();
+}
+function removeChannel(i){
+ channels.splice(i,1);
+ save();
+}
+function render(){
+ const box=document.getElementById("channels");
+ box.innerHTML="";
+ channels.forEach((c,i)=>{
+  const item=document.createElement("div");
+  item.className="channel";
+  const title=document.createElement("b");
+  title.textContent=c.name;
+  const playBtn=document.createElement("button");
+  playBtn.textContent="Смотреть";
+  playBtn.onclick=()=>play(c.url);
+  const del=document.createElement("button");
+  del.textContent="Удалить";
+  del.onclick=()=>removeChannel(i);
+  item.append(title,document.createElement("br"),playBtn,del);
+  box.appendChild(item);
+ });
+}
+render();
+</script>
+</body>
+</html>
