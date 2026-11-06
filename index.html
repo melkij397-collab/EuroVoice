@@ -170,3 +170,36 @@ render();
 </script>
 </body>
 </html>
+return;
+ }
+
+ status("Загружаем видеопоток...");
+
+ if(window.Hls && Hls.isSupported()){
+  hls=new Hls();
+  hls.loadSource(url);
+  hls.attachMedia(video);
+
+  hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+   status("Видео загружено! Нажми ▶.");
+  });
+
+  hls.on(Hls.Events.ERROR,(event,data)=>{
+   if(data.fatal){
+    status("Ошибка загрузки. Проверь ссылку или доступ к потоку.");
+    hls.destroy();
+    hls=null;
+   }
+  });
+ }else if(video.canPlayType("application/vnd.apple.mpegurl")){
+  video.src=url;
+  status("Поток загружается...");
+ }else{
+  status("Браузер не поддерживает HLS.");
+ }
+}
+
+render();
+</script>
+</body>
+</html>
