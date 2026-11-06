@@ -3,203 +3,914 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EuroVoice</title>
+<meta name="theme-color" content="#10172a">
+<title>EuroVoice 2.0 — European TV</title>
+
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.18"></script>
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#101525;color:white;font-family:Arial,sans-serif}
-header{padding:22px;background:#172d70;font-size:28px;font-weight:bold}
-main{max-width:850px;margin:auto;padding:20px}
-h2{color:#63a8ff}
-input,button{padding:13px;border:0;border-radius:8px;margin:5px 0}
-input{width:100%;background:#263149;color:white}
-button{background:#1769e0;color:white;font-weight:bold;cursor:pointer}
-video{width:100%;background:black;border-radius:12px;margin-top:12px}
-.channel{background:#202b40;padding:12px;margin:8px 0;border-radius:8px}
-small{color:#aab8d0}
-#status{background:#202b40;padding:12px;border-radius:8px;margin-top:10px}
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #0b1020;
+  color: #f5f7ff;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  background: linear-gradient(120deg,#173b85,#382b77);
+  padding: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.logo {
+  font-size: 27px;
+  font-weight: bold;
+}
+
+.logo span {
+  color: #78b7ff;
+}
+
+.version {
+  color: #c8d8ff;
+  font-size: 12px;
+}
+
+main {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+.hero {
+  padding: 25px;
+  border-radius: 18px;
+  background: linear-gradient(120deg,#192d59,#29234e);
+  margin-bottom: 25px;
+}
+
+.hero h1 {
+  margin-top: 0;
+  font-size: 29px;
+}
+
+.hero p {
+  color: #c3cde3;
+  line-height: 1.5;
+}
+
+.section-title {
+  margin-top: 30px;
+  margin-bottom: 14px;
+  font-size: 21px;
+}
+
+.countries {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(140px,1fr));
+  gap: 12px;
+}
+
+.country {
+  background: #19243b;
+  border: 1px solid #30405e;
+  border-radius: 13px;
+  padding: 18px 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: .2s;
+}
+
+.country:hover {
+  background: #263d69;
+  transform: translateY(-2px);
+}
+
+.country.active {
+  border: 2px solid #4d9bff;
+  background: #203b69;
+}
+
+.flag {
+  font-size: 35px;
+  display: block;
+  margin-bottom: 9px;
+}
+
+.search {
+  width: 100%;
+  background: #19243b;
+  border: 1px solid #354664;
+  border-radius: 10px;
+  color: white;
+  padding: 14px;
+  font-size: 15px;
+  margin: 12px 0;
+}
+
+button, input, select {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.btn {
+  background: #236de0;
+  border: 0;
+  color: white;
+  padding: 11px 15px;
+  border-radius: 9px;
+  font-weight: bold;
+}
+
+.btn:hover {
+  background: #3987ff;
+}
+
+.btn.secondary {
+  background: #303e59;
+}
+
+.btn.secondary:hover {
+  background: #455a7d;
+}
+
+.btn.danger {
+  background: #9b3548;
+}
+
+.btn.favorite {
+  background: #7256b8;
+}
+
+.channel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(230px,1fr));
+  gap: 13px;
+}
+
+.channel-card {
+  background: #19243b;
+  border: 1px solid #30405e;
+  padding: 16px;
+  border-radius: 13px;
+}
+
+.channel-card h3 {
+  margin: 0 0 8px;
+}
+
+.channel-card p {
+  color: #aebbd4;
+  font-size: 13px;
+  min-height: 32px;
+  line-height: 1.4;
+}
+
+.channel-actions {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.player-box {
+  background: #151f33;
+  padding: 15px;
+  border-radius: 15px;
+  margin-top: 15px;
+}
+
+video {
+  width: 100%;
+  max-height: 520px;
+  background: black;
+  border-radius: 10px;
+  display: block;
+}
+
+#status {
+  padding: 12px;
+  background: #202e48;
+  border-radius: 9px;
+  margin-top: 12px;
+  color: #d6e3ff;
+  line-height: 1.5;
+}
+
+.add-box {
+  background: #19243b;
+  padding: 18px;
+  border-radius: 14px;
+  margin-top: 15px;
+}
+
+.add-box input,
+.add-box select {
+  width: 100%;
+  background: #0e182b;
+  border: 1px solid #394b69;
+  color: white;
+  padding: 13px;
+  border-radius: 9px;
+  margin: 7px 0;
+}
+
+.empty {
+  padding: 20px;
+  background: #19243b;
+  border-radius: 12px;
+  color: #b7c6e1;
+  text-align: center;
+}
+
+footer {
+  text-align: center;
+  padding: 30px 15px;
+  color: #8594b0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.hidden {
+  display: none;
+}
+
+max-width:500px {
+  main {
+    padding: 13px;
+  }
+
+  .hero h1 {
+    font-size: 24px;
+  }
+
+  .channel-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
+
 <body>
-<header>📺 EuroVoice</header>
+
+<header>
+  <div class="logo">📺 Euro<span>Voice</span></div>
+  <div class="version">EUROPEAN TV · VERSION 2.0</div>
+</header>
+
 <main>
-<h2>Европейское телевидение</h2>
-<p>Смотри доступные телеканалы в одном месте.</p>
 
-<video id="player" controls playsinline></video>
-<div id="status">Готов к воспроизведению.</div>
+<section class="hero">
+  <h1>Европа на одном экране 🇪🇺</h1>
 
-<h2>Добавить телеканал</h2>
-<input id="name" placeholder="Название канала">
-<input id="url" placeholder="Ссылка .m3u8 или официальный сайт">
-<button onclick="addChannel()">Добавить канал</button>
 
-<h2>Мои телеканалы</h2>
-<div id="channels"></div>
+<p>
+    Европейские телеканалы, единый видеоплеер
+    и удобный каталог стран.
+  </p>
+  <p>Выбирай страну и находи интересные каналы.</p>
+</section>
 
-<p><small>Используй официальные источники и потоки, разрешённые для просмотра.</small></p>
-<p><small>Автоматическое русское озвучивание пока не подключено.</small></p>
+<h2 class="section-title">🌍 Выбери страну</h2>
+
+<div class="countries" id="countries">
+
+  <div class="country active" data-country="All">
+    <span class="flag">🌍</span>
+    Все страны
+  </div>
+
+  <div class="country" data-country="Germany">
+    <span class="flag">🇩🇪</span>
+    Германия
+  </div>
+
+  <div class="country" data-country="France">
+    <span class="flag">🇫🇷</span>
+    Франция
+  </div>
+
+  <div class="country" data-country="Italy">
+    <span class="flag">🇮🇹</span>
+    Италия
+  </div>
+
+  <div class="country" data-country="Spain">
+    <span class="flag">🇪🇸</span>
+    Испания
+  </div>
+
+  <div class="country" data-country="Netherlands">
+    <span class="flag">🇳🇱</span>
+    Нидерланды
+  </div>
+
+</div>
+
+<h2 class="section-title">📡 Каталог телеканалов</h2>
+
+<input
+  class="search"
+  id="search"
+  placeholder="🔎 Поиск телеканала..."
+>
+
+<div class="filters">
+  <button class="btn secondary" id="allBtn">Все каналы</button>
+  <button class="btn secondary" id="favBtn">⭐ Избранное</button>
+  <button class="btn secondary" id="customBtn">Мои каналы</button>
+</div>
+
+<div class="channel-grid" id="channelList"></div>
+
+<h2 class="section-title">➕ Добавить свой телеканал</h2>
+
+<div class="add-box">
+
+  <input
+    id="newName"
+    placeholder="Название телеканала"
+  >
+
+  <select id="newCountry">
+    <option value="Germany">🇩🇪 Германия</option>
+    <option value="France">🇫🇷 Франция</option>
+    <option value="Italy">🇮🇹 Италия</option>
+    <option value="Spain">🇪🇸 Испания</option>
+    <option value="Netherlands">🇳🇱 Нидерланды</option>
+  </select>
+
+  <input
+    id="newUrl"
+    placeholder="Ссылка .m3u8 или официальный сайт"
+  >
+
+  <button class="btn" id="addBtn">
+    Добавить телеканал
+  </button>
+
+</div>
+
+<h2 class="section-title">🎬 Видеоплеер EuroVoice</h2>
+
+<div class="player-box">
+
+  <video id="player" controls playsinline></video>
+
+  <div id="status">
+    Плеер готов. Выбери телеканал.
+  </div>
+
+</div>
+
+<h2 class="section-title">⭐ Избранное</h2>
+<div id="favoritesInfo" class="empty">
+  Пока нет избранных телеканалов.
+</div>
+
 </main>
 
+<footer>
+  EuroVoice 2.0 · European Television Platform
+
+  Используй официальные источники вещания.
+
+  Автоматический перевод и русская озвучка
+  будут добавлены отдельным этапом.
+</footer>
+
 <script>
-let channels=JSON.parse(localStorage.getItem("channels")||"[]");
-let hls=null;
 
-const video=document.getElementById("player");
-const statusBox=document.getElementById("status");
+const countryNames = {
+  Germany: "🇩🇪 Германия",
+  France: "🇫🇷 Франция",
+  Italy: "🇮🇹 Италия",
+  Spain: "🇪🇸 Испания",
+  Netherlands: "🇳🇱 Нидерланды"
+};
 
-function status(message){
- statusBox.textContent=message;
+// Каталог официальных страниц вещателей.
+// Это ссылки на сайты, а не прямые HLS-потоки.
+
+const catalog = [
+  {
+    id:"dw",
+    name:"DW Deutsch",
+    country:"Germany",
+    description:"Немецкоязычный канал Deutsche Welle.",
+    url:"https://www.ardmediathek.de/live/Y3JpZDovL2RldXRzY2hld2VsbGUuZGUvTGl2ZXN0cmVhbS1EZXV0c2NoZVdlbGxl"
+  },
+  {
+    id:"france24",
+    name:"France 24",
+    country:"France",
+    description:"Международные новости из Франции.",
+    url:"https://www.france24.com/en/live"
+  },
+  {
+    id:"rainews",
+    name:"Rai News",
+    country:"Italy",
+    description:"Новости итальянского вещателя Rai.",
+    url:"https://www.rainews.it/"
+  },
+  {
+    id:"rtve",
+    name:"RTVE",
+    country:"Spain",
+    description:"Испанский общественный вещатель.",
+    url:"https://www.rtve.es/play/"
+  },
+  {
+    id:"nos",
+    name:"NOS",
+    country:"Netherlands",
+    description:"Новости нидерландского вещателя.",
+    url:"https://nos.nl/"
+  }
+];
+
+let customChannels = [];
+
+try {
+  customChannels = JSON.parse(
+    localStorage.getItem("ev_channels") || "[]"
+  );
+} catch(e) {
+  customChannels = [];
 }
 
-function play(url){
- if(hls){hls.destroy();hls=null;}
- video.pause();
- video.removeAttribute("src");
- video.load();
+let favorites = [];
 
- let parsed;
- try{
-  parsed=new URL(url);
- }catch(e){
-  status("Ошибка: неправильная ссылка.");
-  return;
- }
+try {
+  favorites = JSON.parse(
+    localStorage.getItem("ev_favorites") || "[]"
+  );
+} catch(e) {
+  favorites = [];
+}
 
- if(!["http:","https:"].includes(parsed.protocol)){
-  status("Разрешены только HTTP и HTTPS ссылки.");
-  return;
- }
+let selectedCountry = "All";
+let currentFilter = "all";
+let hls = null;
 
- if(!url.toLowerCase().includes(".m3u8")){
-  status("Это ссылка на страницу канала, а не видеопоток. Открываем сайт отдельно.");
-  window.open(url,"_blank","noopener,noreferrer");
-  return;
- }
+const player = document.getElementById("player");
+const statusBox = doc
 
- status("Загружаем видеопоток...");
 
- if(window.Hls && Hls.isSupported()){
-  hls=new Hls();
-  hls.loadSource(url);
-  hls.attachMedia(video);
+ument.getElementById("status");
+const channelList = document.getElementById("channelList");
 
-  hls.on(Hls.Events.MANIFEST_PARSED,()=>{
-   status("Поток найден. Нажми ▶ на видео.");
-  });
+function showStatus(message) {
+  statusBox.textContent = message;
+}
 
-  hls.on(Hls.Events.ERROR,(event,data)=>{
-   if(data.fatal){
-    if(data.type===Hls.ErrorTypes.NETWORK_ERROR){
-     status("Ошибка сети: сервер не отдал поток. Возможны ограничения доступа или CORS.");
-    }else if(data.type===Hls.ErrorTypes.MEDIA_ERROR){
-     status("Ошибка формата видео или кодека.");
-     hls.recoverMediaError();
-    }else{
-     status("Не удалось воспроизвести поток. Проверь ссылку.");
-     hls.destroy();
-     hls=null;
+function saveData() {
+  localStorage.setItem(
+    "ev_channels",
+    JSON.stringify(customChannels)
+  );
+
+  localStorage.setItem(
+    "ev_favorites",
+    JSON.stringify(favorites)
+  );
+}
+
+function getAllChannels() {
+  return [...catalog, ...customChannels];
+}
+
+function getChannelId(channel) {
+  return channel.id || channel.url;
+}
+
+function renderChannels() {
+
+  const query = document
+    .getElementById("search")
+    .value
+    .trim()
+    .toLowerCase();
+
+  let list = getAllChannels();
+
+  if(selectedCountry !== "All") {
+    list = list.filter(
+      channel => channel.country === selectedCountry
+    );
+  }
+
+  if(currentFilter === "favorites") {
+    list = list.filter(
+      channel => favorites.includes(getChannelId(channel))
+    );
+  }
+
+  if(currentFilter === "custom") {
+    list = list.filter(
+      channel => customChannels.includes(channel)
+    );
+  }
+
+  if(query) {
+    list = list.filter(channel =>
+      channel.name.toLowerCase().includes(query) ||
+      channel.description.toLowerCase().includes(query)
+    );
+  }
+
+  channelList.innerHTML = "";
+
+  if(list.length === 0) {
+    channelList.innerHTML =
+      '<div class="empty">Каналы не найдены.</div>';
+    renderFavorites();
+    return;
+  }
+
+  list.forEach(channel => {
+
+    const id = getChannelId(channel);
+    const isFavorite = favorites.includes(id);
+
+    const card = document.createElement("div");
+    card.className = "channel-card";
+
+    const title = document.createElement("h3");
+    title.textContent =
+      (countryNames[channel.country] || "📺") +
+      " · " + channel.name;
+
+    const description = document.createElement("p");
+    description.textContent = channel.description;
+
+    const actions = document.createElement("div");
+    actions.className = "channel-actions";
+
+    const openButton = document.createElement("button");
+    openButton.className = "btn";
+    openButton.textContent = "▶ Открыть эфир";
+    openButton.onclick = () => {
+      if(channel.url.toLowerCase().includes(".m3u8")) {
+        playStream(channel.url);
+      } else {
+        openOfficialPage(channel.url);
+      }
+    };
+
+    const favoriteButton = document.createElement("button");
+    favoriteButton.className = "btn favorite";
+    favoriteButton.textContent =
+      isFavorite ? "★ В избранном" : "☆ В избранное";
+
+    favoriteButton.onclick = () => {
+      toggleFavorite(id);
+    };
+
+    actions.append(openButton, favoriteButton);
+
+    if(customChannels.includes(channel)) {
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "btn danger";
+      deleteButton.textContent = "Удалить";
+      deleteButton.onclick = () => {
+        deleteChannel(channel.url);
+      };
+      actions.appendChild(deleteButton);
     }
-   }
-  });
- }else if(video.canPlayType("application/vnd.apple.mpegurl")){
-  video.src=url;
-  video.addEventListener("loadedmetadata",()=>{
-   status("Поток загружен. Нажми ▶ на видео.");
-  },{once:true});
-  video.addEventListener("error",()=>{
-   status("Браузер не смог загрузить этот поток.");
-  },{once:true});
- }else{
-  status("Браузер не поддерживает HLS.");
- }
-}
 
-function save(){
- localStorage.setItem("channels",JSON.stringify(channels));
- render();
-}
+    card.append(title, description, actions);
+    channelList.appendChild(card);
 
-function addChannel(){
- const name=document.getElementById("name").value.trim();
- const url=document.getElementById("url").value.trim();
-
- if(!name||!url){
-  status("Заполни оба поля.");
-  return;
- }
-
- channels.push({name,url});
- document.getElementById("name").value="";
- document.getElementById("url").value="";
- save();
- status("Канал добавлен.");
-}
-
-function removeChannel(i){
- channels.splice(i,1);
- save();
- status("Канал удалён.");
-}
-
-function render(){
- const box=document.getElementById("channels");
- box.innerHTML="";
-
- channels.forEach((c,i)=>{
-  const item=document.createElement("div");
-  item.className="channel";
-
-  const title=document.createElement("b");
-  title.textContent=c.name;
-
-  const playBtn=document.createElement("button");
-  playBtn.textContent="Смотреть";
-  playBtn.onclick=()=>play(c.url);
-
-  const del=document.createElement("button");
-  del.textContent="Удалить";
-  del.onclick=()=>removeChannel(i);
-
-  item.append(title,document.createElement("br"),playBtn,del);
-  box.appendChild(item);
- });
-}
-
-render();
-</script>
-</body>
-</html>
-return;
- }
-
- status("Загружаем видеопоток...");
-
- if(window.Hls && Hls.isSupported()){
-  hls=new Hls();
-  hls.loadSource(url);
-  hls.attachMedia(video);
-
-  hls.on(Hls.Events.MANIFEST_PARSED,()=>{
-   status("Видео загружено! Нажми ▶.");
   });
 
-  hls.on(Hls.Events.ERROR,(event,data)=>{
-   if(data.fatal){
-    status("Ошибка загрузки. Проверь ссылку или доступ к потоку.");
+  renderFavorites();
+}
+
+function chooseCountry(country) {
+
+  selectedCountry = country;
+
+  document.querySelectorAll(".country").forEach(item => {
+    item.classList.toggle(
+      "active",
+      item.dataset.country === country
+    );
+  });
+
+  renderChannels();
+}
+
+document.querySelectorAll(".country").forEach(item => {
+  item.addEventListener("click", () => {
+    chooseCountry(item.dataset.country);
+  });
+});
+
+function toggleFavorite(id) {
+
+  if(favorites.includes(id)) {
+    favorites = favorites.filter(item => item !== id);
+  } else {
+    favorites.push(id);
+  }
+
+  saveData();
+  renderChannels();
+}
+
+function renderFavorites() {
+
+  const box = document.getElementById("favoritesInfo");
+
+  const favoriteChannels = getAllChannels().filter(
+    channel => favorites.includes(getChannelId(channel))
+  );
+
+  if(favoriteChannels.length === 0) {
+    box.textContent = "Пока нет избранных телеканалов.";
+    return;
+  }
+
+  box.innerHTML = "";
+
+  favoriteChannels.forEach(channel => {
+    const item = document.cr
+
+
+eateElement("div");
+    item.className = "channel-card";
+
+    const name = document.createElement("b");
+    name.textContent = channel.name;
+
+    const button = document.createElement("button");
+    button.className = "btn";
+    button.textContent = "Открыть";
+    button.style.marginLeft = "10px";
+
+    button.onclick = () => {
+      if(channel.url.toLowerCase().includes(".m3u8")) {
+        playStream(channel.url);
+      } else {
+        openOfficialPage(channel.url);
+      }
+    };
+
+    item.append(name, button);
+    box.appendChild(item);
+  });
+}
+
+function addChannel() {
+
+  const name = document.getElementById("newName")
+    .value.trim();
+
+  const country = document.getElementById("newCountry")
+    .value;
+
+  const url = document.getElementById("newUrl")
+    .value.trim();
+
+  if(!name || !url) {
+    showStatus("Заполни название и ссылку.");
+    return;
+  }
+
+  let parsed;
+
+  try {
+    parsed = new URL(url);
+  } catch(e) {
+    showStatus("Неправильная ссылка.");
+    return;
+  }
+
+  if(!["http:","https:"].includes(parsed.protocol)) {
+    showStatus("Разрешены только HTTP и HTTPS ссылки.");
+    return;
+  }
+
+  if(customChannels.some(channel => channel.url === url)) {
+    showStatus("Этот канал уже добавлен.");
+    return;
+  }
+
+  customChannels.push({
+    id:"custom-" + Date.now(),
+    name:name,
+    country:country,
+    description:"Добавленный пользователем телеканал.",
+    url:url
+  });
+
+  document.getElementById("newName").value = "";
+  document.getElementById("newUrl").value = "";
+
+  saveData();
+  renderChannels();
+
+  showStatus("Телеканал успешно добавлен!");
+}
+
+function deleteChannel(url) {
+
+  customChannels = customChannels.filter(
+    channel => channel.url !== url
+  );
+
+  favorites = favorites.filter(
+    id => id !== url &&
+    !id.startsWith("custom-")
+  );
+
+  saveData();
+  renderChannels();
+
+  showStatus("Канал удалён.");
+}
+
+function openOfficialPage(url) {
+
+  try {
+    const parsed = new URL(url);
+
+    if(!["http:","https:"].includes(parsed.protocol)) {
+      showStatus("Недопустимый адрес.");
+      return;
+    }
+
+    window.open(
+      parsed.href,
+      "_blank",
+      "noopener,noreferrer"
+    );
+
+    showStatus(
+      "Открыта официальная страница вещателя. " +
+      "Встроенное воспроизведение зависит от сайта."
+    );
+
+  } catch(e) {
+    showStatus("Не удалось открыть страницу.");
+  }
+}
+
+function stopPlayer() {
+
+  if(hls) {
     hls.destroy();
-    hls=null;
-   }
-  });
- }else if(video.canPlayType("application/vnd.apple.mpegurl")){
-  video.src=url;
-  status("Поток загружается...");
- }else{
-  status("Браузер не поддерживает HLS.");
- }
+    hls = null;
+  }
+
+  player.pause();
+  player.removeAttribute("src");
+  player.load();
 }
 
-render();
+function playStream(url) {
+
+  let parsed;
+
+  try {
+    parsed = new URL(url);
+  } catch(e) {
+    showStatus("Неправильная ссылка на поток.");
+    return;
+  }
+
+  if(!["http:","https:"].includes(parsed.protocol)) {
+    showStatus("Разрешены только HTTP и HTTPS ссылки.");
+    return;
+  }
+
+  if(!url.toLowerCase().includes(".m3u8")) {
+    openOfficialPage(url);
+    return;
+  }
+
+  stopPlayer();
+
+  showStatus("Подключаем видеопоток...");
+
+  if(window.Hls && Hls.isSupported()) {
+
+    hls = new Hls({
+      enableWorker:true,
+      lowLatencyMode:false
+    });
+
+    hls.loadSource(url);
+    hls.attachMedia(player);
+
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      showStatus("Поток загружен. Нажми ▶.");
+    });
+
+    hls.on(Hls.Events.ERROR, (event, data) => {
+
+      if(data.fatal) {
+
+        if(data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+          showStatus(
+            "Ошибка сети. Возможны ограничения CORS " +
+            "или недоступность потока."
+          );
+        } else if(data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+          showStatus(
+            "Ошибка формата видео или кодека."
+          );
+        } else {
+          showStatus(
+            "Не удалось воспроизвести поток."
+          );
+        }
+
+        stopPlayer();
+      }
+
+    });
+
+  } else if(
+    player.canPlayType("application/vnd.apple.mpegurl")
+  ) {
+
+    player.src = url;
+
+    player.addEventListener("loadedmetadata", () => {
+      showStatus("Видео загружено. Нажми ▶.");
+    }, {once:true});
+
+    player.addEve
+
+
+ntListener("error", () => {
+      showStatus("Браузер не смог загрузить поток.");
+    }, {once:true});
+
+  } else {
+
+    showStatus("Браузер не поддерживает HLS.");
+
+  }
+}
+
+document.getElementById("addBtn").addEventListener(
+  "click",
+  addChannel
+);
+
+document.getElementById("search").addEventListener(
+  "input",
+  renderChannels
+);
+
+document.getElementById("allBtn").addEventListener(
+  "click",
+  () => {
+    currentFilter = "all";
+    renderChannels();
+  }
+);
+
+document.getElementById("favBtn").addEventListener(
+  "click",
+  () => {
+    currentFilter = "favorites";
+    renderChannels();
+  }
+);
+
+document.getElementById("customBtn").addEventListener(
+  "click",
+  () => {
+    currentFilter = "custom";
+    renderChannels();
+  }
+);
+
+renderChannels();
+
 </script>
 </body>
 </html>
