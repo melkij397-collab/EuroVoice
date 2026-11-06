@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EuroVoice</title>
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.18"></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#101525;color:white;font-family:Arial,sans-serif}
@@ -17,6 +17,7 @@ button{background:#1769e0;color:white;font-weight:bold;cursor:pointer}
 video{width:100%;background:black;border-radius:12px;margin-top:12px}
 .channel{background:#202b40;padding:12px;margin:8px 0;border-radius:8px}
 small{color:#aab8d0}
+#status{background:#202b40;padding:12px;border-radius:8px;margin-top:10px}
 </style>
 </head>
 <body>
@@ -26,70 +27,145 @@ small{color:#aab8d0}
 <p>Смотри доступные телеканалы в одном месте.</p>
 
 <video id="player" controls playsinline></video>
+<div id="status">Готов к воспроизведению.</div>
 
 <h2>Добавить телеканал</h2>
 <input id="name" placeholder="Название канала">
-<input id="url" placeholder="Ссылка на поток .m3u8">
+<input id="url" placeholder="Ссылка .m3u8 или официальный сайт">
 <button onclick="addChannel()">Добавить канал</button>
 
 <h2>Мои телеканалы</h2>
 <div id="channels"></div>
 
-<p><small>Используй только потоки, доступные для законного просмотра и распространения.</small></p>
-<p><small>Русское автоматическое озвучивание будет добавлено отдельно.</small></p>
+<p><small>Используй официальные источники и потоки, разрешённые для просмотра.</small></p>
+<p><small>Автоматическое русское озвучивание пока не подключено.</small></p>
 </main>
+
 <script>
 let channels=JSON.parse(localStorage.getItem("channels")||"[]");
 let hls=null;
 
+const video=document.getElementById("player");
+const statusBox=document.getElementById("status");
+
+function status(message){
+ statusBox.textContent=message;
+}
+
 function play(url){
- const video=document.getElementById("player");
  if(hls){hls.destroy();hls=null;}
- if(Hls.isSupported()){
+ video.pause();
+ video.removeAttribute("src");
+ video.load();
+
+ let parsed;
+ try{
+  parsed=new URL(url);
+ }catch(e){
+  status("Ошибка: неправильная ссылка.");
+  return;
+ }
+
+ if(!["http:","https:"].includes(parsed.protocol)){
+  status("Разрешены только HTTP и HTTPS ссылки.");
+  return;
+ }
+
+ if(!url.toLowerCase().includes(".m3u8")){
+  status("Это ссылка на страницу канала, а не видеопоток. Открываем сайт отдельно.");
+  window.open(url,"_blank","noopener,noreferrer");
+  return;
+ }
+
+ status("Загружаем видеопоток...");
+
+ if(window.Hls && Hls.isSupported()){
   hls=new Hls();
   hls.loadSource(url);
   hls.attachMedia(video);
+
+  hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+   status("Поток найден. Нажми ▶ на видео.");
+  });
+
+  hls.on(Hls.Events.ERROR,(event,data)=>{
+   if(data.fatal){
+    if(data.type===Hls.ErrorTypes.NETWORK_ERROR){
+     status("Ошибка сети: сервер не отдал поток. Возможны ограничения доступа или CORS.");
+    }else if(data.type===Hls.ErrorTypes.MEDIA_ERROR){
+     status("Ошибка формата видео или кодека.");
+     hls.recoverMediaError();
+    }else{
+     status("Не удалось воспроизвести поток. Проверь ссылку.");
+     hls.destroy();
+     hls=null;
+    }
+   }
+  });
  }else if(video.canPlayType("application/vnd.apple.mpegurl")){
   video.src=url;
+  video.addEventListener("loadedmetadata",()=>{
+   status("Поток загружен. Нажми ▶ на видео.");
+  },{once:true});
+  video.addEventListener("error",()=>{
+   status("Браузер не смог загрузить этот поток.");
+  },{once:true});
  }else{
-  alert("Браузер не поддерживает этот формат.");
+  status("Браузер не поддерживает HLS.");
  }
 }
+
 function save(){
  localStorage.setItem("channels",JSON.stringify(channels));
  render();
 }
+
 function addChannel(){
  const name=document.getElementById("name").value.trim();
  const url=document.getElementById("url").value.trim();
- if(!name||!url){alert("Заполни оба поля");return;}
+
+ if(!name||!url){
+  status("Заполни оба поля.");
+  return;
+ }
+
  channels.push({name,url});
  document.getElementById("name").value="";
  document.getElementById("url").value="";
  save();
+ status("Канал добавлен.");
 }
+
 function removeChannel(i){
  channels.splice(i,1);
  save();
+ status("Канал удалён.");
 }
+
 function render(){
  const box=document.getElementById("channels");
  box.innerHTML="";
+
  channels.forEach((c,i)=>{
   const item=document.createElement("div");
   item.className="channel";
+
   const title=document.createElement("b");
   title.textContent=c.name;
+
   const playBtn=document.createElement("button");
   playBtn.textContent="Смотреть";
   playBtn.onclick=()=>play(c.url);
+
   const del=document.createElement("button");
   del.textContent="Удалить";
   del.onclick=()=>removeChannel(i);
+
   item.append(title,document.createElement("br"),playBtn,del);
   box.appendChild(item);
  });
 }
+
 render();
 </script>
 </body>
